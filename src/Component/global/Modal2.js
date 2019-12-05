@@ -441,27 +441,6 @@ class MyModal extends Component {
         doc.setFontSize(11);
         doc.text("Datos del Beneficio", 37, 210);
 
-        var listadoFinalBeneficio = [];
-
-        // if(this.props.datos.length>0){
-
-        //     console.log("Cantidad de beneficio");
-        //     console.log(this.props.datos.length);
-  
-        //    for (let m = 0; m<this.props.datos.length; m++) {
-  
-        //       var beneficio_ = [
-        //         m+1,
-        //         this.props.datos[m].benef_otrogado+"%",
-        //         this.props.datos[m].autorizacion,
-        //         this.props.datos[m].condicion,this.props.datos[m].fecha,
-        //         this.props.datos[m].resolucion
-        //       ]
-  
-        //       listadoFinalBeneficio.push(beneficio_);
-        //   }
-        // }
-
         doc.autoTable(columnsBenf0, benefArray, {
             theme: 'grid',
             styles: {
@@ -489,91 +468,80 @@ class MyModal extends Component {
 
         var first = doc.autoTable.previous;
 
-        doc.setFont("helvetica");
-        doc.setFontType("bold");
-        doc.setFontSize(11);
-        doc.text("Pago por concepto", 37, first.finalY + 25);
-
-        doc.setDrawColor(0, 0, 0);
-        doc.setLineWidth(0.5);
-        doc.line(35, first.finalY + 22, 35, first.finalY + 27)
-        doc.line(35, first.finalY + 27, 750, first.finalY + 27)
-
-        doc.autoTable(columnsBenf, listadoFinal, {
-            theme: 'grid',
-            styles: {
-                cellPadding: 5, // a number, array or object (see margin below)
-                fontSize: 8,
-                font: "helvetica", // helvetica, times, courier
-                lineColor: 0,
-                lineWidth: 0.5,
-                fontStyle: 'normal', // normal, bold, italic, bolditalic
-                overflow: 'ellipsize', // visible, hidden, ellipsize or linebreak
-                fillColor: false, // false for transparent or a color as described below
-                textColor: 0,
-                halign: 'center', // left, center, right
-                valign: 'middle', // top, middle, bottom
-                columnWidth: 'auto' // 'auto', 'wrap' or a number
-            },
-            headerStyles: {
-                fillColor: [180, 180, 180],
-                textColor: 0,
-                fontStyle: 'bold'
-            },
-            startY: first.finalY + 45,
-            showHeader: 'firstPage'
-
-        });
-
-        /*
-                          var first = doc.autoTable.previous;
-                          //FOOTER
-                                  var pageCount = doc.internal.getNumberOfPages();
-        
-                                  for( let n = 0; n < pageCount; n++) {
-        
-        
-                                  doc.setPage(n);
-        
-                                  doc.setFont("helvetica");
-                                  doc.setFontType("bold");
-                                  doc.setTextColor(230);
-                                  doc.setFontSize(45);
-                                  doc.text(90,520 , 'DOCUMENTO SIN VALOR OFICIAL',null,32);
-                                  doc.setTextColor(0);
-                                  doc.setFontSize(10);
-                                  doc.text(35,585,"Modulo de control recibos");
-                                  doc.text(65,585,"-");
-                                  doc.text(75,585,"taller");
-                                  doc.text(125,585,"-");
-                                  doc.text(135,585,this.state.data[0].nombre);
-                                  doc.text(700,585,"SIGAP v.2.0");
-                                  doc.text(800,585, doc.internal.getCurrentPageInfo().pageNumber + "/" + pageCount);
-        
-                                  doc.setDrawColor(0, 0, 0);
-                                  doc.setLineWidth(0.5);
-                                  doc.line(35, 576,816, 576);
-        
-                                }
-        */
-        var first;
-        if (listadoFinal) {
-            first = doc.autoTable.previous;
-            doc.setFont("helvetica");
-            doc.setFontType("bold");
-            doc.setFontSize(10); //cambioooooooo
-            doc.text("TOTAL CANCELADO SOLES: S/." + this.sumaTotalSoles(), 520, first.finalY + 25);
-            //  doc.text("TOTAL CANCELADO: S/."+this.sumaTotalSoles,620,first.finalY+25);
+        // var finalY1 = first.finalY + 40;
+        var conceptos = [];
+        for(var i = 0; i < listadoFinal.length; i++){
+            conceptos.push(listadoFinal[i][1]);
         }
+        // doc.text("Lista: " + conceptos, 37, finalY1)
+        
         if (listadoFinal) {
-            first = doc.autoTable.previous;
+            var conceptoAnterior = '0';
+            var coordenadaY = first.finalY + 25;
+            for(var i = 0; i < listadoFinal.length; i++){
+                var conceptoActual = listadoFinal[i][1];
+                if(conceptoAnterior != conceptoActual && conceptoActual){
+                    
+                    var listaConcepto = [];
+                    var contador = 0;
+                    for(var j = 0; j < listadoFinal.length; j++){
+                        if(listadoFinal[j][1] == conceptoActual){
+                            listaConcepto.push(listadoFinal[j]);
+                            contador = j;
+                        }                      
+                    }
+                    listaConcepto.push(listadoFinal[contador + 1]);
+                    listaConcepto.push(listadoFinal[contador + 2]);
+
+                    doc.setFont("helvetica");
+                    doc.setFontType("bold");
+                    doc.setFontSize(11);
+                    doc.text("Pago por concepto " + conceptoActual, 37, coordenadaY);
+
+                    doc.setDrawColor(0, 0, 0);
+                    doc.setLineWidth(0.5);
+                    doc.line(35, coordenadaY - 3, 35, coordenadaY + 2)
+                    doc.line(35, coordenadaY + 2, 750, coordenadaY + 2)
+
+                    doc.autoTable(columnsBenf, listaConcepto, {
+                        theme: 'grid',
+                        styles: {
+                            cellPadding: 5, // a number, array or object (see margin below)
+                            fontSize: 8,
+                            font: "helvetica", // helvetica, times, courier
+                            lineColor: 0,
+                            lineWidth: 0.5,
+                            fontStyle: 'normal', // normal, bold, italic, bolditalic
+                            overflow: 'ellipsize', // visible, hidden, ellipsize or linebreak
+                            fillColor: false, // false for transparent or a color as described below
+                            textColor: 0,
+                            halign: 'center', // left, center, right
+                            valign: 'middle', // top, middle, bottom
+                            columnWidth: 'auto' // 'auto', 'wrap' or a number
+                        },
+                        headerStyles: {
+                            fillColor: [180, 180, 180],
+                            textColor: 0,
+                            fontStyle: 'bold'
+                        },
+                        startY: first.finalY + 45,
+                        showHeader: 'firstPage'
+            
+                    });
+        
+                    first = doc.autoTable.previous;
+
+                    coordenadaY = first.finalY + 25;
+                    conceptoAnterior = conceptoActual;
+                }
+            }
+
             doc.setFont("helvetica");
             doc.setFontType("bold");
             doc.setFontSize(10);
+            doc.text("TOTAL CANCELADO SOLES: S/." + this.sumaTotalSoles(), 520, first.finalY + 25);
             doc.text("TOTAL CANCELADO DOLARES: $/." + this.sumaTotalDolares(), 520, first.finalY + 50);
-            //  doc.text("TOTAL CANCELADO: S/."+this.sumaTotalSoles,620,first.finalY+25);
         }
-
         var string = doc.output('datauristring');
         var iframe = "<iframe width='100%' height='100%' src='" + string + "'></iframe>"
         var x = window.open();
