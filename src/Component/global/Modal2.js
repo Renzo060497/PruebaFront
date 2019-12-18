@@ -220,7 +220,7 @@ class MyModal extends Component {
             {params: {cod: this.state.data[0].codigo}}
         ).then(response =>{
             var subBenefArray = [];
-            subBenefArray.push('1')
+            subBenefArray.push('Valor')
             if(response.data.data.benef_max) subBenefArray.push(response.data.data.benef_max);
             else subBenefArray.push('');
             if(response.data.data.benef_aut) subBenefArray.push(response.data.data.benef_aut);
@@ -235,11 +235,19 @@ class MyModal extends Component {
         }).catch(e => {
             console.log(e);
         })
-        console.log('Beneficio maximo: ' + benefArray[1] + ' | Autorizacion: '+ benefArray[2] +' | Condicion: '+ benefArray[3] +' | Fecha: '+ benefArray[4] +' | Resolucion: '+ benefArray[5]);
+        console.log('Beneficio maximo: ' + benefArray[0][1] + ' | Autorizacion: '+ benefArray[0][2] +' | Condicion: '+ benefArray[0][3] +' | Fecha: '+ benefArray[0][4] +' | Resolucion: '+ benefArray[0][5]);
 
 
         //let data=[]
-        var columnsBenf0 = ["Nº","Beneficio","Autorización","Condición","Fecha","Resolución"];
+        var columnsBenf0 = ["Dato","Beneficio","Autorización","Condición","Fecha","Resolución"];
+        var columnsBenf1 = [columnsBenf0[0],benefArray[0][0]];
+        var columnsBenf2 = [
+                            [columnsBenf0[1],benefArray[0][1]],
+                            [columnsBenf0[2],benefArray[0][2]],
+                            [columnsBenf0[3],benefArray[0][3]],
+                            [columnsBenf0[4],benefArray[0][4]],
+                            [columnsBenf0[5],benefArray[0][5]],
+                           ];
         var columnsBenf = ["N°", "Concepto", "Recibo", "Moneda", "Importe", "Fecha"];
         let lista = []
         let dat2 = this.state.dataAlterar
@@ -441,7 +449,7 @@ class MyModal extends Component {
         doc.setFontSize(11);
         doc.text("Datos del Beneficio", 37, 210);
 
-        doc.autoTable(columnsBenf0, benefArray, {
+        doc.autoTable(columnsBenf1, columnsBenf2, {
             theme: 'grid',
             styles: {
                 cellPadding: 5, // a number, array or object (see margin below)
